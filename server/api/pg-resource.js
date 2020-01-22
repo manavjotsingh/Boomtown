@@ -202,10 +202,11 @@ module.exports = postgres => {
               // Generate tag relationships query (use the'tagsQueryString' helper function provided)
               // @TODO
               // -------------------------------
+              let itemTagsValue = tagsQueryString([...tags], itemid, results)
               const createItemtagsQuery = {
-                text: `INSERT INTO itemtags (itemid, tagid) VALUES ($1, $2);`
+                text: `INSERT INTO itemtags (itemid, tagid) VALUES ${values}`
                 ,
-                values: [itemid, tags],
+                values: tags.map(tag => tag.id),
               };
 
               // Insert tags
@@ -220,7 +221,7 @@ module.exports = postgres => {
                 // release the client back to the pool
                 done();
                 // Uncomment this resolve statement when you're ready!
-                // resolve(newItem.rows[0])
+                resolve(newItem.rows[0])
                 // -------------------------------
               });
             });
