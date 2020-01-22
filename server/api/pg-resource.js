@@ -10,7 +10,7 @@ module.exports = postgres => {
     async createUser({ fullname, email, password }) {
       const newUserInsert = {
         text: `INSERT INTO users(fullname, email, password) 
-        VALUES($a, $b, $c) RETURNING *`, // @TODO: Authentication - Server
+        VALUES($1, $2, $3) RETURNING *`, // @TODO: Authentication - Server
         values: [fullname, email, password],
       };
       try {
@@ -29,7 +29,7 @@ module.exports = postgres => {
     },
     async getUserAndPasswordForVerification(email) {
       const findUserQuery = {
-        text: `SELECT * FROM users WHERE email=$a`, // @TODO: Authentication - Server
+        text: `SELECT * FROM users WHERE email=$1`, // @TODO: Authentication - Server
         values: [email],
       };
       try {
@@ -62,7 +62,7 @@ module.exports = postgres => {
        */
 
       const findUserQuery = {
-        text: `SELECT id, email, fullname, bio FROM users WHERE id=$a`, // @TODO: Basic queries
+        text: `SELECT id, email, fullname, bio FROM users WHERE id=$1`, // @TODO: Basic queries
         values: [id],
       };
 
@@ -74,9 +74,13 @@ module.exports = postgres => {
        *  Ex: If the user is not found from the DB throw 'User is not found'
        *  If the password is incorrect throw 'User or Password incorrect'
        */
-
-      const user = await postgres.query(findUserQuery);
-      return user;
+      try {
+        const user = await postgres.query(findUserQuery);
+        if (!user) throw "User was not found.";
+        return user;
+      } catch (e) {
+        throw "User or Password was incorrect.";
+      }
       // -------------------------------
     },
     async getItems(idToOmit) {
@@ -93,7 +97,7 @@ module.exports = postgres => {
          *  to your query text using string interpolation
          */
 
-        text: ``,
+        text: `SELECT * FROM items WHERE ownerid!=$1`,
         values: idToOmit ? [idToOmit] : [],
       });
       return items.rows;
@@ -104,7 +108,7 @@ module.exports = postgres => {
          *  @TODO:
          *  Get all Items for user using their id
          */
-        text: ``,
+        text: `SELECT * FROM items WHERE ownerid=$1`,
         values: [id],
       });
       return items.rows;
@@ -115,30 +119,40 @@ module.exports = postgres => {
          *  @TODO:
          *  Get all Items borrowed by user using their id
          */
-        text: ``,
+        text: `SELECT * FROM items WHERE borrowid=$1`,
         values: [id],
       });
       return items.rows;
     },
-    async getTags() {
-      const tags = await postgres.query(/* @TODO: Basic queries */);
+    async getTags(id) {
+      const tags = await postgres.query({/* @TODO: Basic queries */
+        text: `SELECT * FROM tags WHERE tagid=$1`,
+        values: [id]
+      });
       return tags.rows;
     },
     async getTagsForItem(id) {
       const tagsQuery = {
-        text: ``, // @TODO: Advanced query Hint: use INNER JOIN
+        text: `SELECT *
+        FROM tags INNER JOIN itemtags 
+        ON tags.id = itemtags.tagid
+        WHERE itemtags.itemid=$1`, // @TODO: Advanced query Hint: use INNER JOIN
         values: [id],
       };
 
       const tags = await postgres.query(tagsQuery);
       return tags.rows;
     },
-    async saveNewItem({ item, user }) {
-      /**
+
+
+
+
+
+    /**
        *  @TODO: Adding a New Item
        *
        *  Adding a new Item requires 2 separate INSERT statements.
-       *
+       *  
        *  All of the INSERT statements must:
        *  1) Proceed in a specific order.
        *  2) Succeed for the new Item to be considered added
@@ -152,29 +166,47 @@ module.exports = postgres => {
        *  Read the method and the comments carefully before you begin.
        */
 
+    /**
+             * Begin transaction by opening a long-lived connection
+             * to a client from the client pool.
+             * - Read about transactions here: https://node-postgres.com/features/transactions
+             */
+
+
+
+    async saveNewItem({ item, user }) {
+
       return new Promise((resolve, reject) => {
-        /**
-         * Begin transaction by opening a long-lived connection
-         * to a client from the client pool.
-         * - Read about transactions here: https://node-postgres.com/features/transactions
-         */
+        /** */
         postgres.connect((err, client, done) => {
           try {
             // Begin postgres transaction
             client.query("BEGIN", async err => {
               const { title, description, tags } = item;
-
               // Generate new Item query
               // @TODO
               // -------------------------------
+              const createItemQuery = {
+                text: `INSERT INTO items (title, description, ownerid) VALUES ($1, $2, $3) returning *;`
+                ,
+                values: [title, description, user.id],
+              };
 
               // Insert new Item
+              const newItem = await postgres.query(createItemQuery);
+              const itemid = newItem.rows[0].id;
+              // return createItems.rows;
               // @TODO
               // -------------------------------
 
               // Generate tag relationships query (use the'tagsQueryString' helper function provided)
               // @TODO
               // -------------------------------
+              const createItemtagsQuery = {
+                text: `INSERT INTO itemtags (itemid, tagid) VALUES ($1, $2);`
+                ,
+                values: [itemid, tags],
+              };
 
               // Insert tags
               // @TODO
