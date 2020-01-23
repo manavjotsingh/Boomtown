@@ -25,7 +25,7 @@ const queryResolvers = app => ({
       throw new ApolloError(e);
     }
   },
-  async items() {
+  async items(root) {
     // @TODO: Replace this mock return statement with the correct items from Postgres
     return [];
     // -------------------------------
@@ -36,3 +36,5 @@ const queryResolvers = app => ({
     // -------------------------------
   },
 });
+
+module.exports = queryResolvers;
