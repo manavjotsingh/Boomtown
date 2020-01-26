@@ -124,10 +124,9 @@ module.exports = postgres => {
       });
       return items.rows;
     },
-    async getTags(id) {
+    async getTags() {
       const tags = await postgres.query({/* @TODO: Basic queries */
-        text: `SELECT * FROM tags WHERE tagid=$1`,
-        values: [id]
+        text: `SELECT * FROM tags`,
       });
       return tags.rows;
     },
