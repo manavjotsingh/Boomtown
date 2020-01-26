@@ -22,6 +22,11 @@ Node.js
 
 - is an open-source, cross-platform, JavaScript runtime environment that executes JavaScript code outside of a browser.
 
+
+## Personal Learnings
+
+Getting confortable using Javascript and writing arrow functions and also being able to read my javascript errors and find solutions for them. Setting up a database to be normalized then setting up Graphql schema, making relovers and mutations. 
+
 ## Server
 
 Commands must be run from the `server` directory:
