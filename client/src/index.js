@@ -3,12 +3,15 @@ import ReactDOM from "react-dom";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 // @TODO: Uncomment each module as needed in your client app
-// import { ApolloProvider } from 'react-apollo'
-// import { BrowserRouter } from 'react-router-dom'
+import { ApolloProvider } from 'react-apollo'
+import client from './apollo'
+import { BrowserRouter as Router } from 'react-router-dom'
 // -------------------------------
 
 import registerServiceWorker from "./registerServiceWorker";
 import theme from "./theme";
+import AppRoutes from './routes'
+
 
 /**
  * @TODO: Initialize Apollo Client
@@ -27,7 +30,6 @@ import theme from "./theme";
  *
  * Uncomment the following line when your routes are configured
  *
- * import AppRoutes from './routes'
  *
  * Below in your <App />, nest your <AppRoutes /> inside of <BrowserRouter />
  * component to enable routing in your client app.
@@ -61,8 +63,8 @@ const App = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      <Home />
-    </MuiThemeProvider>
+      <ApolloProvider client={client}><Router><AppRoutes /></Router></ApolloProvider>
+    </MuiThemeProvider >
   );
 };
 
