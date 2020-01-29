@@ -30,7 +30,7 @@ module.exports = gql`
     userimageurl: String
     bio: String
     items: [Item]
-    borrowed: [Item]
+    borrower: [Item]
   }
 
   type Tag {

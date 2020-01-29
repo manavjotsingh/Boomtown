@@ -25,7 +25,7 @@ const ItemFields = gql`
         id
         fullname
         email
-        bio fields    
+        bio     
     }
   }
 `;
@@ -34,21 +34,25 @@ const ItemFields = gql`
 
 export const ALL_ITEMS_QUERY = gql`
   query items($filter: ID) {
-   ...ItemsFields
+    items(filter: $filter){
+      ...ItemFields
+    }
   }
   ${ItemFields}
 `;
 
 export const ALL_USER_ITEMS_QUERY = gql`
   query user($id: ID!) {
-    bio
-    email
-    fullname
-    items{
-      ...ItemFields
-    }
-    borrowed{
-      ...ItemFields
+    user(id: $id){
+      bio
+      email
+      fullname
+      items{
+        ...ItemFields
+      }
+      borrower{
+        ...ItemFields
+      }
     }
   }
   ${ItemFields}
@@ -77,15 +81,15 @@ export const ADD_ITEM_MUTATION = gql`
  * Auth-related queries and mutations.
  */
 
-export const VIEWER_QUERY = gql`
-  query {
-    id
-    email
-    fullname
-    bio
-    # @TODO: Query the id, email, fullname, and bio fields for the viewer.
-  }
-`;
+// export const VIEWER_QUERY = gql`
+//   query {
+//     id
+//     email
+//     fullname
+//     bio
+//     # @TODO: Query the id, email, fullname, and bio fields for the viewer.
+//   }
+// `;
 // export const LOGOUT_MUTATION = gql`
 //   mutation {
 //     # @TODO: Run the logout mutation.

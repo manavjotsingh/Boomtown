@@ -31,5 +31,5 @@ const server = app.listen(PORT, () => {
 });
 
 server.on('error', err => {
-  console.log(err);
+  console.log(err + "this was found");
 });

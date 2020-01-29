@@ -11,7 +11,7 @@ const relationResolvers = {
         throw new ApolloError(e);
       }
     },
-    async borrowed({ id }, args, { pgResource }, info) {
+    async borrower({ id }, args, { pgResource }, info) {
       try {
         const items = await pgResource.getBorrowedItemsForUser(id);
         return items;
