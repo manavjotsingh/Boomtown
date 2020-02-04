@@ -10,30 +10,9 @@ import { BrowserRouter as Router } from 'react-router-dom'
 
 import registerServiceWorker from "./registerServiceWorker";
 import theme from "./theme";
-import AppRoutes from './routes'
+import AppRoutes from './routes';
+import ItemPreviewProvider from './context/ItemPreviewProvinder';
 
-
-/**
- * @TODO: Initialize Apollo Client
- *
- * Uncomment the following line when Apollo Client is configured:
- *
- * import client from './apollo'
- *
- * Below in your <App />, wrap your pages in an <ApolloProvider /> component
- * and pass it `client` as the `client` prop value so they will
- * have access to data exposed by your GraphQL API.
- */
-
-/**
- * @TODO: Add Routing
- *
- * Uncomment the following line when your routes are configured
- *
- *
- * Below in your <App />, nest your <AppRoutes /> inside of <BrowserRouter />
- * component to enable routing in your client app.
- */
 
 /**
  * @TODO: Wrap your app with the Item Preview Provider
@@ -63,7 +42,13 @@ const App = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      <ApolloProvider client={client}><Router><AppRoutes /></Router></ApolloProvider>
+      <ApolloProvider client={client}>
+        <ItemPreviewProvider>
+          <Router>
+            <AppRoutes />
+          </Router>
+        </ItemPreviewProvider>
+      </ApolloProvider>
     </MuiThemeProvider >
   );
 };
